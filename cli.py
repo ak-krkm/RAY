@@ -1,6 +1,6 @@
 import click
 import os
-
+from ray_model import runInference
 @click.command()
 @click.argument("query", type=str)
 @click.option("-f", "--file", type=click.Path(exists=True), help="Path to an auxiliary file (optional).")
@@ -11,18 +11,17 @@ def main(query, file):
     QUERY is the mandatory text argument.
     Use -f FILE for an optional file.
     """
+    content = ""
     click.echo(f"Query: {query}")
     if file:
-        click.echo(f"Auxiliary file: {file}")
+        try:
+            with open(file,'r') as file:
+                content = file.read()
+        except Exception as e:
+            click.echo(f"error reading tht file : {e}")
+            return
 
-
-  
-
-        
-    # TODO: Here you would call your AI model, e.g.:
-    # from ai_model.model import run_inference
-    # result = run_inference(query, image, file)
-    # click.echo(result)
-
+    response = runInference(query,content)
+    click.echo(response)
 if __name__ == "__main__":
     main()
